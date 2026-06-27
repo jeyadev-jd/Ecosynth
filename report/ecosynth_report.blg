@@ -1,0 +1,51 @@
+This is BibTeX, Version 0.99d (TeX Live 2023/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: ecosynth_report.aux
+The style file: unsrtnat.bst
+Database file #1: references.bib
+Warning--empty journal in vaswani2017attention
+Warning--empty journal in dai2019retrosynthesis
+Warning--empty journal in somnath2021learning
+Warning--empty journal in devlin2019bert
+You've used 38 entries,
+            2481 wiz_defined-function locations,
+            761 strings with 12494 characters,
+and the built_in function-call counts, 17480 in all, are:
+= -- 1312
+> -- 1294
+< -- 14
++ -- 472
+- -- 396
+* -- 1551
+:= -- 2928
+add.period$ -- 115
+call.type$ -- 38
+change.case$ -- 74
+chr.to.int$ -- 38
+cite$ -- 42
+duplicate$ -- 761
+empty$ -- 1382
+format.name$ -- 444
+if$ -- 3568
+int.to.chr$ -- 1
+int.to.str$ -- 39
+missing$ -- 38
+newline$ -- 199
+num.names$ -- 114
+pop$ -- 298
+preamble$ -- 1
+purify$ -- 38
+quote$ -- 0
+skip$ -- 459
+stack$ -- 0
+substring$ -- 843
+swap$ -- 119
+text.length$ -- 5
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 263
+warning$ -- 4
+while$ -- 135
+width$ -- 0
+write$ -- 495
+(There were 4 warnings)

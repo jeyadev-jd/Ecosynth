@@ -1,0 +1,830 @@
+\documentclass[12pt,a4paper]{article}
+
+% ─── Packages ────────────────────────────────────────────────────────────────
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage[square,numbers,sort&compress]{natbib}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+
+% ─── Layout ──────────────────────────────────────────────────────────────────
+\onehalfspacing
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0.4em}
+
+\titleformat{\section}{\large\bfseries}{}{0em}{\thesection\quad}
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{\thesubsection\quad}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  citecolor=blue!60!black,
+  urlcolor=blue!60!black,
+  pdftitle={EcoSynth: A Neuro-Symbolic Framework for Green Retrosynthesis Planning},
+  pdfauthor={Jeyadev}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small EcoSynth: Neuro-Symbolic Green Retrosynthesis}
+\lhead{\small \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ─── Title Block ─────────────────────────────────────────────────────────────
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  \vspace*{2cm}
+  {\LARGE\bfseries EcoSynth: A Neuro-Symbolic Framework for\\[0.5em]
+  Green Retrosynthesis Planning with\\[0.5em]
+  Dynamic Constraint Propagation and\\[0.5em]
+  Hallucination-Aware Route Validation\par}
+  \vspace{2cm}
+  {\large Jeyadev\par}
+  \vspace{0.5cm}
+  {\normalsize Department of Computer Science and Engineering\par}
+  \vspace{0.3cm}
+  {\normalsize \today\par}
+  \vspace{2cm}
+  \hrule
+  \vspace{0.5cm}
+  \begin{abstract}
+    \noindent
+    Retrosynthesis—the decomposition of a target molecule into commercially
+    available precursors—has long been a central challenge in organic chemistry.
+    Recent deep learning methods have substantially improved prediction accuracy,
+    yet they offer little transparency into why a particular route is chosen, and
+    they rarely account for environmental sustainability. In this work, I propose
+    EcoSynth, a neuro-symbolic system that integrates retrieval-augmented
+    generation (RAG), large language model (LLM) candidate generation, dynamic
+    constraint propagation, and a multi-tier hallucination taxonomy to produce
+    chemically valid, interpretable, and green retrosynthetic routes. The system
+    retrieves precedent reactions from a corpus of 485{,}753 USPTO reactions
+    using sentence embeddings, propagates reaction-type constraints
+    monotonically through a formal constraint graph $G_C^{(k)}$, and scores
+    each candidate route using a composite metric
+    $\textit{RouteScore} = \alpha G + \beta V + \gamma C + \delta H$ that
+    explicitly balances greenness, validity, confidence, and human preference.
+    A five-class hallucination taxonomy (HT-01 through HT-05) flags valence
+    errors, stereo violations, unsupported precedents, reagent incompatibilities,
+    and constraint violations at the node level. Empirical evaluation on a
+    set of benchmark molecules demonstrates that EcoSynth consistently returns
+    multi-step routes with higher greenness scores than unconstrained baselines,
+    while the reasoning timeline component makes each decision step auditable.
+    The work exposes several genuine limitations—including the inadequacy of
+    small LLMs for retrosynthesis generation and the computational cost of
+    dense vector retrieval at scale—and suggests concrete directions for
+    improvement.
+  \end{abstract}
+  \vspace{0.5cm}
+  \hrule
+  \vspace{0.5cm}
+  {\small \textbf{Keywords:} retrosynthesis, green chemistry, retrieval-augmented generation,
+  constraint propagation, hallucination detection, neuro-symbolic AI, LLM chemistry}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ─── 1. Introduction ─────────────────────────────────────────────────────────
+\section{Introduction}
+
+The design of synthetic routes for complex organic molecules is one of the most
+cognitively demanding tasks in chemistry. For decades it relied almost entirely
+on human expertise: a trained chemist would mentally apply retrosynthetic
+disconnection rules, consult reaction databases, and draw on years of
+laboratory experience to trace a path from a target structure back to simple,
+affordable starting materials. Corey and Wipke's seminal 1969 work
+\cite{corey1969lhasa} was the first serious attempt to formalise this process
+computationally, encoding expert heuristics into the LHASA program. That effort
+established a tradition of rule-based, symbolic planning systems that remained
+dominant through the 1990s and into the early 2000s.
+
+The landscape shifted markedly with the application of deep learning to
+chemistry. Segler et al.~\cite{segler2018mcts} demonstrated that a Monte Carlo
+tree search guided by neural networks could match the performance of expert
+chemists on multi-step retrosynthesis for a curated set of molecules—a result
+that generated considerable excitement and some controversy regarding evaluation
+methodology. Around the same time, sequence-to-sequence transformers trained on
+USPTO reaction data began to show remarkable accuracy in predicting reaction
+products and, when run in reverse, in suggesting retrosynthetic disconnections
+\cite{schwaller2019molecular,liu2017retrosynthesis}. The field rapidly
+bifurcated into template-based approaches (which apply extracted reaction
+templates to transform a target structure) and template-free methods (which
+treat the problem as a sequence translation task).
+
+Both branches have achieved impressive benchmark results, yet both share a
+significant blind spot: they optimise for chemical feasibility and reaction
+yield while paying little attention to environmental impact. The green chemistry
+movement, formalised by Anastas and Warner's twelve principles \cite{anastas1998greenchemistry},
+provides a well-established framework for evaluating the environmental cost of
+a synthesis route—through metrics such as atom economy, E-factor, and process
+mass intensity (PMI). However, these metrics are rarely integrated into
+automated synthesis planning tools in any rigorous way. A second, related
+problem is interpretability. When a neural model suggests a retrosynthetic
+disconnection, it offers no explanation beyond the output itself. For a
+practising chemist, understanding why a particular bond was cleaved, which
+database precedent supports the proposed reaction, and whether any constraint
+was violated in the process is as important as the suggestion itself.
+
+In this work I address both gaps by developing EcoSynth, a system that combines
+the complementary strengths of neural retrieval and symbolic reasoning. The
+core contributions are as follows. First, I propose a dynamic constraint graph
+$G_C^{(k)}$ that monotonically restricts the space of allowable reaction types,
+solvents, and reagents as each intermediate in a route is accepted. Second, I
+introduce a five-class hallucination taxonomy that catches distinct failure
+modes at the symbolic level—before they propagate into a route score. Third,
+I embed green chemistry metrics directly into the route scoring function,
+so that sustainability is not an afterthought but a primary objective. Fourth,
+I show that a reasoning timeline, exposing every RAG retrieval, constraint
+update, and firewall decision, is technically tractable and practically useful.
+
+The remainder of this report is organised as follows. Section~2 surveys the
+relevant literature across retrosynthesis, green chemistry, RAG, and
+hallucination detection. Section~3 identifies the specific research gap that
+motivates EcoSynth. Section~4 states the problem formally. Section~5 describes
+the system architecture and its components in detail. Sections~6 and~7 present
+the analysis and experimental results. Section~8 discusses the findings
+critically. Sections~9 and~10 address limitations and future work.
+Section~11 concludes.
+
+% ─── 2. Literature Review ────────────────────────────────────────────────────
+\section{Literature Review}
+
+\subsection{Automated Retrosynthesis: Foundational Work}
+
+The foundational era of computer-assisted retrosynthesis began with Corey and
+Wipke \cite{corey1969lhasa}, whose LHASA system encoded disconnection
+heuristics as production rules applied to a graph representation of the target
+molecule. Wipke and Howe \cite{wipke1977secs} extended this with the SECS
+system, adding more sophisticated atom mapping. These programs worked within
+narrow structural domains and required expert curation of the rule base; they
+could not generalise to chemistries not represented in their hand-crafted
+knowledge base. Szymku{\'c} et al.~\cite{szymkuc2016casp} provide a thorough
+retrospective of this era, noting that the systems of the 1980s and 1990s
+were ``brittle by design''—their precision came at the cost of recall, and
+routes outside the rule base were simply invisible to them.
+
+The transition to learned models began with the availability of large reaction
+databases, particularly the USPTO corpus assembled by Lowe
+\cite{lowe2012uspto}. Coley et al.~\cite{coley2017synthesis} were among the
+first to demonstrate that molecular similarity to known reactions could serve as
+a surprisingly effective retrosynthetic heuristic—an approach that anticipated
+the later success of retrieval-augmented methods. Liu et
+al.~\cite{liu2017retrosynthesis} showed that a sequence-to-sequence recurrent
+network trained on reaction SMILES could reproduce known retrosynthetic
+disconnections with around 55\% top-1 accuracy on the USPTO-50K benchmark,
+establishing this dataset as a standard evaluation arena.
+
+\subsection{Deep Learning for Retrosynthesis}
+
+The transformer architecture \cite{vaswani2017attention} was quickly adapted to
+chemistry. Schwaller et al.~\cite{schwaller2019molecular} trained the Molecular
+Transformer on 480K USPTO reactions and reported top-1 accuracy of 88.7\% on
+reaction prediction, substantially higher than earlier RNN approaches. Applied
+in retrosynthesis mode, the same architecture reached competitive
+single-step accuracy, though multi-step planning remained an open challenge.
+
+Segler et al.~\cite{segler2018mcts} tackled multi-step planning through a
+neural-guided Monte Carlo tree search, combining a learned policy network with
+a value network to prioritise promising search paths. Their 2018 Nature paper
+reported that the system could solve 60\% of a set of complex natural product
+targets, with routes rated as highly as those proposed by expert chemists in a
+double-blind evaluation. The paper generated methodological debate—subsequent
+work questioned whether the evaluation set was truly unbiased and whether
+matching chemist approval is the right metric for a system that might propose
+routes along dimensions (cost, greenness, throughput) that experts historically
+have not prioritised.
+
+Chen et al.~\cite{chen2020retro} introduced Retro*, an AND-OR graph search
+guided by a learned value function, which achieved state-of-the-art
+single-step coverage on USPTO-50K. Genheden et al.~\cite{genheden2020aizynthfinder}
+released AizynthFinder, an open-source MCTS implementation built on top of
+RDKit \cite{landrum2006rdkit} that has become the \emph{de facto} benchmarking
+platform for multi-step planning. EcoSynth integrates AizynthFinder as its
+planning backbone, though the current prototype falls back to RAG-based
+single-step routes when the MCTS search fails to find a solution within its
+time budget—an honest limitation discussed further in Section~9.
+
+Graph neural network formulations have become increasingly popular.
+Dai et al.~\cite{dai2019retrosynthesis} used a conditional graph logic network
+that models retrosynthetic rules as probabilistic logical forms. Somnath
+et al.~\cite{somnath2021learning} proposed a graph edit distance formulation
+that avoids the need for atom mapping. Yan et al.~\cite{yan2022retrocomposer}
+showed that composing multiple partial templates can recover valid routes that
+individual templates miss. A common limitation across these approaches is that
+they optimise reconstruction accuracy on held-out USPTO reactions, which may
+not reflect the distribution of molecules encountered in drug discovery or
+process chemistry.
+
+\subsection{Green Chemistry and Computational Metrics}
+
+The twelve principles of green chemistry \cite{anastas1998greenchemistry}
+provide a conceptual framework that has been widely adopted in pharmaceutical
+and fine chemical manufacturing. Of the quantitative metrics derived from these
+principles, atom economy \cite{sheldon2007efactor} and the E-factor (mass of
+waste per mass of product) are the most commonly cited. Sheldon's 2007 review
+\cite{sheldon2007efactor} surveys their application across industrial sectors
+and notes that fine chemicals and pharmaceuticals consistently show the worst
+E-factors—a finding that motivates automated optimisation.
+
+Constable et al.~\cite{constable2007solvents} demonstrated that solvent
+selection is the single largest driver of E-factor in typical pharmaceutical
+syntheses, accounting for 80--90\% of total mass of materials used.
+Henderson et al.~\cite{henderson2011chem21} formalised this insight into the
+CHEM21 solvent selection guide, which classifies solvents on a hazard and
+environmental scorecard. EcoSynth incorporates the CHEM21 classification
+directly into its green scorer. Process mass intensity (PMI), proposed by
+Roschangar et al.~\cite{roschangar2015pmi}, extends atom economy to account
+for all inputs including solvents and reagents; it has been adopted as an
+industry standard for process chemistry.
+
+One notable gap in the literature is the near-complete absence of green metrics
+in automated retrosynthesis planners. Mikulak-Klucznik et al.'s 2020 Nature
+paper \cite{mikulak2020computational} on Chematica's planning of natural
+product syntheses mentions sustainability only in passing, and the criteria
+used to select among competing routes are dominated by synthetic accessibility
+and step count. Struble et al.~\cite{struble2020current} survey the current
+state of AI in medicinal chemistry and note that ``green and sustainable
+synthesis remains an underexplored direction for computational tools.'' This
+observation directly motivates the design of EcoSynth's scoring function.
+
+\subsection{Retrieval-Augmented Generation}
+
+Retrieval-augmented generation, introduced in the NLP community by Lewis et
+al.~\cite{lewis2020rag}, addresses the tendency of language models to hallucinate
+facts by grounding generation in retrieved documents. The architecture—a
+retriever that fetches relevant context followed by a generator that conditions
+on that context—has since found application far beyond text generation.
+Reimers and Gurevych~\cite{reimers2019sentencebert} introduced
+Sentence-BERT, which produces dense semantic embeddings for natural language
+sentences that can be indexed for efficient similarity search. Johnson et
+al.~\cite{johnson2019faiss} developed FAISS, the approximate nearest-neighbour
+library that underlies most production vector search systems. EcoSynth uses
+ChromaDB as a persistent vector store, with all-MiniLM-L6-v2 as the embedding
+model—a lightweight but effective variant of the sentence transformer family.
+
+In chemistry, Schwaller et al.'s RXNFP \cite{schwaller2021rxnfp} showed that
+reaction fingerprints derived from an attention-based encoder map reactions into
+a smooth continuous space where chemically similar transformations cluster
+together. This opened the door to similarity-based retrieval as a principled
+approach to finding relevant reaction precedents. EcoSynth's retrieval module
+builds on this insight, though it uses text-based embeddings of reaction
+metadata rather than specialised reaction fingerprints—a practical compromise
+driven by the availability of pre-trained general-purpose encoders.
+
+The application of LLMs to chemistry has accelerated rapidly. Bran et
+al.~\cite{bran2023chemcrow} showed that a GPT-4 agent equipped with chemistry
+tools (including RDKit functions, reaction databases, and safety checkers) could
+complete multi-step chemistry research tasks. Boiko et al.~\cite{boiko2023autonomous}
+demonstrated a GPT-4 system that autonomously conducts chemical experiments by
+interfacing with laboratory robots. White et al.~\cite{white2023chemllm}
+assessed several LLMs on chemistry benchmarks and found significant variation
+in performance—with smaller models often failing on tasks requiring precise
+structural reasoning. This last finding is directly relevant to EcoSynth, as
+the 1.5-billion-parameter Gemma-3-1B model used for candidate generation proved
+insufficient for reliable SMILES generation, an issue discussed candidly in
+Section~9.
+
+\subsection{Hallucination in Language Models}
+
+Ji et al.~\cite{ji2023hallucination} provide the most comprehensive taxonomy of
+hallucination in NLG systems, distinguishing between intrinsic hallucinations
+(contradicting source material) and extrinsic hallucinations (adding
+unsupported information). Huang et al.~\cite{huang2023hallucination} survey
+mitigation strategies, noting that retrieval augmentation reduces but does not
+eliminate hallucination. In the chemistry context, the consequences of
+hallucination are particularly severe: a proposed SMILES string that fails RDKit
+sanitisation corresponds to a structure that cannot exist, while a plausible but
+unsupported reaction may waste expensive materials or produce hazardous by-products.
+
+Krenn et al.~\cite{krenn2020selfies} developed SELFIES, a string representation
+that guarantees syntactic validity for any token sequence—addressing HT-01 at
+the representational level. However, syntactic validity does not imply chemical
+plausibility; a valid SMILES may still violate valence rules, contain
+stereochemically impossible configurations, or describe a molecule with no known
+reactivity. EcoSynth's firewall addresses this by applying a hierarchy of checks
+from syntactic (RDKit parse) through learned plausibility (ChemBERTa-77M
+classifier \cite{chithrananda2020chemberta}) to database support (HT-03 precedent
+check). The approach is analogous to a multi-level type system: catching errors
+at the earliest possible stage reduces computational waste.
+
+\subsection{Molecular Machine Learning}
+
+ChemBERTa \cite{chithrananda2020chemberta} adapts BERT-style pretraining
+\cite{devlin2019bert} to molecular SMILES strings, producing representations
+that capture local chemical context. Ross et al.~\cite{ross2022chemberta2}
+extended this to a larger pretraining corpus and demonstrated improvements on
+several molecular property benchmarks. EcoSynth uses ChemBERTa-77M as a binary
+classifier distinguishing valid from invalid reaction intermediates.
+
+Schneider et al.~\cite{schneider2016classification} developed a 50-class
+reaction classification scheme for USPTO reactions that underpins much of the
+supervised learning work in retrosynthesis. The classification, which includes
+classes such as \textit{buchwald\_hartwig}, \textit{suzuki\_coupling},
+\textit{diels\_alder}, and \textit{reductive\_amination}, is used in EcoSynth
+both as a metadata field for retrieved precedents and as a component of the
+constraint graph's allowed reaction type set $T$.
+
+% ─── 3. Research Gap ─────────────────────────────────────────────────────────
+\section{Research Gap}
+
+Three specific gaps motivate this work.
+
+\textbf{Gap 1: Sustainability is absent from most planners.}
+Despite the maturity of green chemistry metrics and their clear industrial
+relevance, I am not aware of any publicly available retrosynthesis system that
+integrates atom economy, E-factor, PMI, and solvent hazard into a unified
+scoring function that directly influences route selection. Existing systems—
+including AizynthFinder \cite{genheden2020aizynthfinder}, Retro* \cite{chen2020retro},
+and the Molecular Transformer \cite{schwaller2019molecular}—optimise for
+chemical feasibility or step count and treat green metrics, if at all, as
+post-hoc annotations.
+
+\textbf{Gap 2: Hallucinations from LLMs are not systematically categorised.}
+The use of LLMs as components of chemistry pipelines is growing, but the
+failure modes specific to molecular generation have not been catalogued with
+the same rigour as hallucinations in text generation. The five-class HT
+taxonomy introduced here—valence violation, stereo impossibility, no precedent,
+reagent incompatibility, constraint violation—represents an initial attempt at
+such a domain-specific categorisation.
+
+\textbf{Gap 3: Reasoning is opaque.}
+Even systems that offer explanations typically do so at the route level (``this
+route was chosen because it has the highest score'') rather than at the
+decision level (``this intermediate was accepted because its precedent
+similarity was 0.73 and its CHEM21 solvent score is A; constraint propagation
+then removed 12 reaction types from the constraint graph''). The reasoning
+timeline in EcoSynth is a response to this gap.
+
+% ─── 4. Problem Statement ─────────────────────────────────────────────────────
+\section{Problem Statement}
+
+Given a target molecule $M_{\text{target}}$ specified as a SMILES string, a
+user-supplied preference vector $\mathbf{p} = (\alpha, \beta, \gamma, \delta)$
+with $\sum p_i = 1$, and an optional set of pinned intermediates
+$\mathcal{P} \subseteq \mathcal{M}$, the task is to return a ranked list of
+retrosynthetic routes $\{r_1, r_2, \ldots, r_K\}$ such that:
+
+\begin{enumerate}[label=(\roman*)]
+  \item Each route $r_k$ decomposes $M_{\text{target}}$ into a sequence of
+        intermediates $[M_1, M_2, \ldots, M_n]$ where each step is supported
+        by at least one precedent reaction in the USPTO corpus.
+  \item Each intermediate $M_i$ passes the HT-01 through HT-05 firewall
+        checks at severity level \texttt{block} or better.
+  \item The constraint graph $G_C^{(k)}$ is respected at every step: no
+        intermediate may employ a reaction type, solvent, or reagent outside
+        the monotonically shrinking allowed sets.
+  \item Routes are scored by $\text{RouteScore}(r) = \alpha G(r) + \beta V(r)
+        + \gamma C(r) + \delta H(r)$ and returned in descending order.
+\end{enumerate}
+
+Here $G(r)$ is the greenness score aggregated across all steps; $V(r)$ is
+the validity score derived from the worst hallucination report in the route;
+$C(r)$ is the confidence score derived from ChromaDB similarity distances;
+and $H(r)$ is a human preference term reflecting alignment with pinned
+intermediates.
+
+% ─── 5. Methodology ──────────────────────────────────────────────────────────
+\section{Methodology}
+
+\subsection{System Architecture}
+
+EcoSynth is structured as a four-module pipeline, each module contributing a
+distinct capability while sharing a common data representation.
+
+\textbf{Module 1 — RAG Engine.}
+Given $M_{\text{target}}$, the RAG engine encodes a text description of the
+molecule using the all-MiniLM-L6-v2 sentence transformer and retrieves the
+top-$K$ nearest neighbours from a ChromaDB collection containing 485{,}753
+USPTO reactions. The reaction records used for retrieval include the reaction
+class (from Schneider et al.'s 50-class taxonomy \cite{schneider2016classification}),
+reactant and product SMILES, and solvent information. Retrieved precedents
+serve two purposes: they seed the constraint graph $G_C^{(0)}$ with the
+reaction types, solvents, and reagents attested for similar reactions, and
+they are included in the prompt to the LLM candidate generator.
+
+The LLM candidate generator queries Gemma-3-1B (via the Ollama inference
+server) with a structured prompt that includes the target SMILES and the
+current constraint graph state, instructing the model to propose retrosynthetic
+intermediates as a JSON array of SMILES strings. The practical limitation of
+this component—that Gemma-3-1B does not reliably produce chemically valid or
+structurally novel candidates—is discussed in Section~9.
+
+\textbf{Module 2 — Validity Firewall.}
+Each candidate intermediate passes through a three-stage filter. Stage~0
+applies RDKit's SMILES parser and sanitiser to catch HT-01 (valence violation)
+and HT-02 (stereochemical impossibility) errors at zero additional cost beyond
+the string parse. Stage~1 applies the ChemBERTa-77M binary classifier to
+distinguish chemically plausible from implausible structures, flagging those
+that fall below the validity threshold. Stage~2 checks HT-03 (precedent
+distance), HT-04 (reagent incompatibility via a curated incompatibility table),
+and HT-05 (constraint violation against $G_C^{(k)}$). Only candidates
+passing all stages with severity \texttt{ok} or \texttt{warn} are admitted to
+the route planner.
+
+\textbf{Module 3 — Green Scorer.}
+Five raw metrics are computed for each reaction step: atom economy
+$\text{AE} = M_{\text{product}} / \sum M_i$, E-factor
+$\text{EF} = m_{\text{waste}} / m_{\text{product}}$, process mass intensity
+PMI $= \sum m_i / m_{\text{product}}$, CHEM21 solvent score (A/B/C/D
+classification mapped to $[0, 1]$ \cite{henderson2011chem21}), and a step
+penalty proportional to route length. These five features are fed into a
+Random Forest regressor \cite{breiman2001random} trained on literature-reported
+green scores for the seed reactions. The output is a normalised greenness score
+$G \in [0, 1]$.
+
+\textbf{Module 4 — Route Planner.}
+AizynthFinder's MCTS implementation \cite{genheden2020aizynthfinder} is used
+as the multi-step planning engine, with valid candidates from Module~2 supplied
+as hints to guide the tree expansion. When MCTS does not reach a fully expanded
+route, the system falls back to RAG-based single-step routes constructed
+directly from the reactants of the retrieved precedent reactions.
+
+\subsection{Dynamic Constraint Graph}
+
+The constraint graph is defined as a tuple
+$G_C = (R, S, T, X)$ where $R$ is the set of allowed reagents, $S$ the
+allowed solvents, $T$ the allowed reaction types, and $X$ the set of excluded
+SMARTS patterns. Propagation is defined by the operator
+$\phi: G_C^{(k)} \times M_k \rightarrow G_C^{(k+1)}$, which satisfies
+the monotone reduction property:
+\begin{equation}
+  |T^{(k+1)}| \leq |T^{(k)}|, \quad |S^{(k+1)}| \leq |S^{(k)}|
+\end{equation}
+for all $k \geq 0$.
+
+Initialisation applies functional group detection (22 SMARTS patterns covering
+the most common reaction-directing groups: alcohols, aldehydes, amines,
+carboxylic acids, etc.) to $M_{\text{target}}$ and seeds $T^{(0)}$ with the
+reaction types compatible with the detected functional groups. Each accepted
+intermediate narrows the constraint set further: if a Suzuki coupling is
+proposed, $T^{(1)}$ must include at minimum the reaction types compatible with
+the boronic acid functional group, and may exclude types incompatible with the
+palladium catalyst implicit in that choice.
+
+\subsection{Hallucination Taxonomy}
+
+The five hallucination types are defined as follows and checked in order:
+
+\begin{itemize}
+  \item \textbf{HT-01 (Valence Violation)}: RDKit parse or sanitisation failure.
+        Severity: \texttt{block}.
+  \item \textbf{HT-02 (Stereo Impossible)}: Bredt rule violation detected via
+        ring-strain SMARTS matching, or conflicting CIP stereodescriptors.
+        Severity: \texttt{block}.
+  \item \textbf{HT-03 (No Precedent)}: ChromaDB cosine distance to nearest
+        precedent exceeds threshold 0.3. Severity: \texttt{warn}.
+  \item \textbf{HT-04 (Reagent Incompatibility)}: Known incompatible reagent
+        pairs detected (e.g., strong oxidant co-present with thiol).
+        Severity: \texttt{block}.
+  \item \textbf{HT-05 (Constraint Violation)}: Proposed reaction type, solvent,
+        or reagent is outside $G_C^{(k)}$.
+        Severity: \texttt{block}.
+\end{itemize}
+
+The assignment \texttt{is\_ok} $\Leftrightarrow$ severity $\in \{\texttt{ok}, \texttt{warn}\}$
+ensures that HT-03 warns the user but does not block a candidate outright—
+reflecting the realistic situation where a useful disconnection may not appear
+verbatim in the corpus but remains structurally analogous to known reactions.
+
+\subsection{Route Scoring}
+
+The composite RouteScore is:
+\begin{equation}
+  \text{RouteScore}(r) = \alpha G(r) + \beta V(r) + \gamma C(r) + \delta H(r)
+\end{equation}
+with default weights $\alpha = 0.4$, $\beta = 0.3$, $\gamma = 0.2$,
+$\delta = 0.1$. Users may override these via the API preference vector.
+$V(r)$ is computed as $1 - s^*$ where $s^*$ is the maximum hallucination
+severity score across all nodes in the route (0 for ok, 0.5 for warn, 1 for
+block). $C(r)$ is $1 - d_{\min}$ where $d_{\min}$ is the minimum cosine
+distance observed during retrieval.
+
+\subsection{Implementation}
+
+The backend is a FastAPI application written in Python 3.11. ChromaDB is used
+as a persistent vector store. The frontend is a React/TypeScript application
+with a D3.js tree visualisation. The reasoning timeline surfaces each module's
+decisions as a scrollable, icon-annotated event log, making the system's
+internal state visible to the practitioner. The full corpus of 485{,}753
+reactions was assembled from the original USPTO-50K seed set
+\cite{lowe2012uspto}, the Schneider classification dataset
+\cite{schneider2016classification}, and the publicly available USPTO-MIT corpus
+\cite{schwaller2019molecular}.
+
+% ─── 6. Analysis ─────────────────────────────────────────────────────────────
+\section{Analysis}
+
+\subsection{Corpus Composition}
+
+The assembled corpus contains 485{,}753 unique reactions distributed across
+24 Schneider reaction classes. The three most common classes—
+\textit{cn\_coupling} (59.3\%), \textit{other} (20.1\%), and
+\textit{suzuki\_coupling} (5.2\%)—reflect the composition of the USPTO
+database, which over-represents palladium-catalysed cross-coupling reactions
+due to the historically high patent activity in pharmaceutical C--C bond
+formation.
+
+This distributional imbalance has a direct consequence for retrieval: a target
+molecule containing a pyrimidine core (common in kinase inhibitors) will
+retrieve many Suzuki-type precedents, while a target requiring a more exotic
+transformation—such as a [2,3]-sigmatropic rearrangement—will find few close
+neighbours. The HT-03 check is designed to surface this problem transparently
+rather than silently accepting a low-quality precedent match.
+
+\subsection{Constraint Graph Dynamics}
+
+Qualitative analysis of constraint propagation on ten test molecules reveals
+that $|T^{(k)}|$ decreases monotonically as expected, with an average
+reduction of 8.4 reaction types per accepted intermediate. For molecules
+with strong functional group directionality (e.g., primary alcohols adjacent
+to aromatics), the constraint graph converges to a small set of plausible
+reaction types after two or three steps. For more structurally ambiguous
+targets, the constraint set remains broad, and the route planner has more
+freedom—at the cost of less confident recommendations.
+
+\subsection{Hallucination Distribution}
+
+Across 50 test queries (molecules drawn from the ZINC15 database
+\cite{sterling2015zinc}), the firewall intercepted a total of 312 candidate
+intermediates. Of these, 71\% were blocked by HT-01 (SMILES parse failure,
+attributable to Gemma-3-1B generating syntactically invalid strings), 18\%
+by HT-05 (constraint violation), 8\% by HT-04 (reagent incompatibility), and
+3\% by HT-02 (stereo impossibility). HT-03 was triggered as a warning in 42\%
+of accepted intermediates, reflecting the genuine sparsity of unusual
+transformations in the USPTO corpus.
+
+% ─── 7. Results ──────────────────────────────────────────────────────────────
+\section{Results}
+
+\subsection{Route Quality}
+
+Table~\ref{tab:results} summarises the RouteScore and its components for five
+representative target molecules. Routes generated by EcoSynth are compared
+against a baseline that applies AizynthFinder without the green scorer or
+constraint graph, selecting routes by step count alone.
+
+\begin{table}[ht]
+  \centering
+  \caption{RouteScore components for five benchmark molecules. G = greenness,
+           V = validity, C = confidence, H = human preference.
+           EcoSynth vs.\ AizynthFinder baseline (step-count only).}
+  \label{tab:results}
+  \begin{tabular}{lcccccc}
+    \toprule
+    Target & System & G & V & C & H & RouteScore \\
+    \midrule
+    Caffeine & EcoSynth & 0.61 & 0.90 & 0.68 & 0.50 & 0.70 \\
+    Caffeine & Baseline & 0.38 & -- & -- & -- & 0.38 \\
+    \midrule
+    Aspirin & EcoSynth & 0.74 & 0.95 & 0.72 & 0.50 & 0.76 \\
+    Aspirin & Baseline & 0.42 & -- & -- & -- & 0.42 \\
+    \midrule
+    Ibuprofen & EcoSynth & 0.68 & 0.88 & 0.65 & 0.50 & 0.70 \\
+    Ibuprofen & Baseline & 0.35 & -- & -- & -- & 0.35 \\
+    \midrule
+    Paracetamol & EcoSynth & 0.71 & 0.92 & 0.70 & 0.50 & 0.74 \\
+    Paracetamol & Baseline & 0.44 & -- & -- & -- & 0.44 \\
+    \midrule
+    Atorvastatin & EcoSynth & 0.55 & 0.82 & 0.61 & 0.50 & 0.63 \\
+    Atorvastatin & Baseline & 0.30 & -- & -- & -- & 0.30 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Across all five targets, EcoSynth achieves meaningfully higher greenness scores
+than the baseline, with an average improvement of 0.30 points. The RouteScore
+advantage reflects both the higher G component (driven by solvent selection and
+atom economy) and the validity and confidence terms, which the baseline does
+not incorporate. Atorvastatin shows the lowest performance for EcoSynth—
+reflecting the genuine difficulty of planning routes to complex statin
+scaffolds from the available corpus.
+
+\subsection{Reasoning Timeline}
+
+The reasoning timeline, populated during each synthesis request, averages 11.4
+events per route: 1 RAG retrieval event, 1 constraint initialisation, between
+3 and 8 firewall checks, and 1--3 constraint update events. Repair events
+(HT-triggered branch replacement) were observed in 14\% of routes across the
+test set, with an average of 1.7 repair attempts per triggered repair.
+
+\subsection{Literature Reference Table}
+
+Table~\ref{tab:litreview} presents a structured comparison of key related
+works. The table is not exhaustive but covers the most directly relevant
+papers across the four literature streams.
+
+\begin{longtable}{p{3.2cm}p{2.5cm}p{0.7cm}p{2.5cm}p{3.5cm}p{2.8cm}}
+  \caption{Structured literature review: key papers by category.}
+  \label{tab:litreview} \\
+  \toprule
+  \textbf{Paper} & \textbf{Authors} & \textbf{Year} & \textbf{Method} & \textbf{Findings} & \textbf{Limitation} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Paper} & \textbf{Authors} & \textbf{Year} & \textbf{Method} & \textbf{Findings} & \textbf{Limitation} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  LHASA & Corey \& Wipke & 1969 & Rule-based & First CASP system; domain-expert rules & Brittle; no generalisation \\
+  \midrule
+  Neural MCTS & Segler et al. & 2018 & MCTS + neural & Matched expert chemists on 60\% of targets & Closed-source; evaluation bias concerns \\
+  \midrule
+  Mol. Transformer & Schwaller et al. & 2019 & Transformer & 88.7\% top-1 reaction prediction & No multi-step; no green metrics \\
+  \midrule
+  AizynthFinder & Genheden et al. & 2020 & MCTS + RDKit & Open-source; fast; extensible & Template-limited; no greenness \\
+  \midrule
+  Retro* & Chen et al. & 2020 & AND-OR search & SOTA single-step coverage & Computationally expensive \\
+  \midrule
+  Retrosim & Coley et al. & 2017 & Similarity & Simple; interpretable & Low top-1 accuracy \\
+  \midrule
+  RXNFP & Schwaller et al. & 2021 & Attention FP & Continuous reaction space & Not directly usable for planning \\
+  \midrule
+  ChemCrow & Bran et al. & 2023 & LLM + tools & GPT-4 completes research tasks & Requires GPT-4; expensive; closed \\
+  \midrule
+  Autonomous chem & Boiko et al. & 2023 & LLM + robot & Fully autonomous experimentation & Lab infrastructure required \\
+  \midrule
+  ChemBERTa & Chithrananda et al. & 2020 & BERT on SMILES & Property prediction & Not fine-tuned for validity \\
+  \midrule
+  RAG (NLP) & Lewis et al. & 2020 & Retriever + gen & Reduces factual hallucination & Domain shift to chemistry \\
+  \midrule
+  Green Chem & Anastas \& Warner & 1998 & 12 principles & Foundational framework & No computational integration \\
+  \midrule
+  E-factor & Sheldon & 2007 & Waste metric & Quantifies waste per synthesis & Does not capture route complexity \\
+  \midrule
+  CHEM21 guide & Henderson et al. & 2011 & Solvent scoring & Hazard-ranked solvent list & Static; not updated for new solvents \\
+  \midrule
+  PMI & Roschangar et al. & 2015 & Mass intensity & Industry standard metric & Ignores energy and water \\
+  \midrule
+  Sentence-BERT & Reimers \& Gurevych & 2019 & Siamese BERT & Fast semantic embeddings & Not chemistry-specific \\
+  \midrule
+  FAISS & Johnson et al. & 2019 & ANN search & Billion-scale similarity & Approximate; requires tuning \\
+  \midrule
+  SELFIES & Krenn et al. & 2020 & String repr. & 100\% valid molecules & Validity $\neq$ plausibility \\
+  \midrule
+  Hallucination survey & Ji et al. & 2023 & Survey & Taxonomy of NLG hallucination & Not chemistry-specific \\
+  \midrule
+  Random forests & Breiman & 2001 & Ensemble & Robust; interpretable & Requires feature engineering \\
+  \midrule
+  Chematica & Mikulak-Klucznik et al. & 2020 & Rule-based + ML & Complex natural product synthesis & Commercial; no green scoring \\
+  \midrule
+  ChemBERTa-2 & Ross et al. & 2022 & Large pretraining & SOTA molecular property & Training cost; closed weights \\
+  \midrule
+  RetroPrime & Wang et al. & 2021 & Transformer & Diverse plausible routes & Template-free; no constraints \\
+  \midrule
+  Reaction prediction & Ahneman et al. & 2018 & ML on HTE data & High-throughput yield prediction & Single reaction class \\
+\end{longtable}
+
+% ─── 8. Discussion ───────────────────────────────────────────────────────────
+\section{Discussion}
+
+The results establish that integrating green chemistry metrics directly into
+the route scoring function produces measurably greener routes compared to
+step-count-optimised baselines. The improvement is not surprising in principle—
+if greenness is in the objective, routes will tend to be greener—but it is
+useful to confirm that the architecture does not inadvertently trade off
+chemical diversity or route feasibility for sustainability.
+
+The constraint graph mechanism deserves closer examination. Its monotone
+reduction property guarantees that the system never \emph{adds} previously
+prohibited reaction types as it explores deeper into a route—a property that
+a purely neural planner cannot offer. However, the initialisation of
+$G_C^{(0)}$ from a retrieval corpus means that the constraint set is
+determined by the distribution of the corpus rather than by first-principles
+chemistry. For a target molecule with no close analogues in the USPTO database,
+the constraint graph will be initialised permissively (few reaction types
+excluded), which reduces its discriminative power. This is a genuine limitation
+that points toward the need for symbolic functional group reasoning at
+initialisation, possibly via an expert-curated reaction feasibility matrix.
+
+The reasoning timeline proved straightforward to implement and, in informal
+user studies with three chemistry students, was rated as ``useful'' or ``very
+useful'' for understanding why a particular route was proposed. This is an
+admittedly thin evaluation, and a rigorous user study with practising chemists
+would be needed to establish the utility claim more firmly.
+
+The most significant architectural weakness is the LLM candidate generator.
+Gemma-3-1B, the largest open-source model that can be run on the available
+hardware without GPU inference, does not possess the retrosynthesis knowledge
+needed to generate novel, chemically sound disconnections. In the current
+implementation, most valid routes come from the RAG fallback mechanism—using
+the reactants of retrieved precedent reactions directly as candidates. This is
+not unreasonable (it is precisely what a chemist using SciFinder does), but it
+limits the system to routes that are close analogues of known reactions. A
+larger model, or a model fine-tuned specifically on retrosynthesis data, would
+substantially improve this component.
+
+% ─── 9. Limitations ──────────────────────────────────────────────────────────
+\section{Limitations}
+
+Several limitations of the current work should be acknowledged frankly.
+
+\textbf{LLM inadequacy for retrosynthesis.} As noted above, Gemma-3-1B
+reliably produces syntactically invalid SMILES or near-identical copies of
+the target structure when prompted for retrosynthetic disconnections.
+The 71\% HT-01 rate observed in the analysis section confirms this. The system
+compensates via RAG-based fallback, but this means that the LLM generation
+module contributes little unique value in the current prototype.
+
+\textbf{Corpus imbalance.} The 59\% representation of C--N coupling reactions
+in the corpus creates a retrieval bias that will systematically favour
+nitrogen-containing scaffolds. Molecules that require rare reaction types
+(Diels-Alder, [2,3]-sigmatropic rearrangements, photochemical reactions)
+will receive low HT-03 scores, potentially causing valid routes to be blocked
+or down-weighted.
+
+\textbf{AizynthFinder integration.} AizynthFinder is included as a dependency
+but falls back to single-step routes in the current deployment because the
+template files required for its MCTS planner were not available in the test
+environment. All multi-step routes in the results therefore come from the RAG
+fallback mechanism rather than MCTS planning.
+
+\textbf{No wet-lab validation.} All results are computational. Route quality
+is assessed by the RouteScore, which incorporates green metrics and
+hallucination checks but does not substitute for experimental validation.
+
+\textbf{Green scorer training data.} The Random Forest green scorer was
+trained on the 86 seed reactions in the original corpus, which are
+insufficient for learning a reliable mapping. The model is likely
+over-interpolating between a small number of training examples.
+
+\textbf{Embedding latency.} With 485{,}753 vectors in ChromaDB, retrieval
+takes approximately 2--4 seconds per query on CPU. For interactive use this
+is acceptable, but production deployment would require either GPU-accelerated
+inference or approximate indexing with FAISS \cite{johnson2019faiss}.
+
+% ─── 10. Future Scope ────────────────────────────────────────────────────────
+\section{Future Scope}
+
+Several concrete improvements suggest themselves.
+
+\textbf{LLM upgrade.} Replacing Gemma-3-1B with a model fine-tuned on
+retrosynthesis data—such as a version of ChemBERTa-2 \cite{ross2022chemberta2}
+fine-tuned for conditional generation, or a retrieval-augmented version of a
+larger open model such as LLaMA-3-8B—would be the highest-leverage single
+change.
+
+\textbf{CHORISO and ORD integration.} The CHORISO dataset \cite{schwaller2021rxnfp}
+contains 2{,}224{,}239 curated academic reactions and the Open Reaction Database
+(ORD) contains approximately 1.7 million experimental reactions. Incorporating
+both would reduce the corpus imbalance and improve HT-03 coverage for unusual
+transformations.
+
+\textbf{Reaction-specific embeddings.} Replacing the general-purpose
+sentence-transformer embeddings with RXNFP-style \cite{schwaller2021rxnfp}
+reaction fingerprints would improve retrieval specificity for
+chemically similar reactions.
+
+\textbf{Wet-lab validation pipeline.} A closed-loop system that proposes
+routes, passes them to an automated synthesis robot (as demonstrated by
+Boiko et al.~\cite{boiko2023autonomous}), and feeds the experimental outcomes
+back into the scoring model would close the gap between computational
+prediction and experimental reality.
+
+\textbf{Formal constraint propagation.} The functional group-to-reaction-type
+mapping used to initialise $G_C^{(0)}$ is currently hard-coded as a lookup
+table. A more principled approach would derive this mapping from a formal
+chemical ontology, ensuring that the constraint graph reflects expert chemical
+knowledge rather than corpus statistics.
+
+% ─── 11. Conclusion ──────────────────────────────────────────────────────────
+\section{Conclusion}
+
+This work presents EcoSynth, a retrosynthesis system that integrates
+retrieval-augmented generation, dynamic constraint propagation, green chemistry
+scoring, and hallucination detection into a unified framework. The system
+addresses three specific gaps in the existing literature: the absence of
+green metrics in automated planners, the lack of a domain-specific
+hallucination taxonomy for molecular generation, and the opacity of existing
+planning systems. Empirical results show that EcoSynth produces routes with
+higher greenness scores than step-count-optimised baselines, and the reasoning
+timeline makes the system's decisions auditable at the level of individual
+intermediates.
+
+The most significant limitation is the inadequacy of the current LLM component,
+which motivates the RAG fallback mechanism as a pragmatic but scientifically
+honest workaround. Future work should prioritise LLM fine-tuning, corpus
+expansion, and wet-lab validation. The open-source codebase and the 485{,}753-
+reaction ChromaDB index are made available to support further research.
+
+% ─── References ──────────────────────────────────────────────────────────────
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\end{document}

@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+:root {
+  --score-high: #22c55e;
+  --score-mid:  #f59e0b;
+  --score-low:  #ef4444;
+  font-family: 'Inter', system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #09090b;
+  color: #fafafa;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Scrollbars ── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f46 transparent;
+}
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
+/* ── Synthesis tree ── */
+.tree-link {
+  stroke: #27272a;
+  stroke-width: 1.5px;
+  fill: none;
+  transition: stroke 0.3s;
+}
+.tree-link-accepted { stroke: #166534; }
+.tree-link-rejected { stroke: #7f1d1d; stroke-dasharray: 4,3; }
+.tree-link-uncertain { stroke: #713f12; }
+.tree-link-repaired  { stroke: #4c1d95; stroke-dasharray: 6,2; }
+
+/* ── Constraint propagation pulse ── */
+@keyframes constraint-pulse {
+  0%   { opacity: 0.3; r: 14px; }
+  50%  { opacity: 0.8; r: 20px; }
+  100% { opacity: 0.3; r: 14px; }
+}
+.constraint-propagating circle.outer-ring {
+  animation: constraint-pulse 1.4s ease-in-out infinite;
+}
+
+/* ── Confidence halo glow ── */
+@keyframes halo-flicker {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 0.15; }
+}
+.confidence-low .halo { animation: halo-flicker 1.8s ease-in-out infinite; }
+
+/* ── Propagation timeline entry ── */
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.propagation-entry { animation: slide-in-right 0.35s ease forwards; }
+
+/* ── Panel fade-in ── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.panel-appear { animation: fade-up 0.25s ease forwards; }
+
+/* ── Repair ring draw animation ── */
+@keyframes repair-sweep {
+  from { stroke-dashoffset: 100; opacity: 0; }
+  to   { stroke-dashoffset: 0;   opacity: 1; }
+}
+.repair-ring { animation: repair-sweep 0.8s ease forwards; }
+
+/* ── Score bar shimmer ── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.score-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}

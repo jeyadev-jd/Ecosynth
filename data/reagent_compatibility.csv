@@ -1,0 +1,189 @@
+reagent_a,reagent_b,severity,reason
+LiAlH4,water,block,Violent exothermic reaction produces H2 gas
+LiAlH4,alcohol,block,Violent reaction with protic solvents
+LiAlH4,carboxylic_acid,block,Violent reaction produces H2 gas
+LiAlH4,DMSO,block,Spontaneous ignition in DMSO
+NaH,water,block,Violent H2 evolution
+NaH,alcohol,block,Exothermic H2 evolution
+NaH,DMSO,warn,Dimsyl anion formation at elevated temperature
+NaBH4,water,warn,Slow hydrolysis at neutral pH acceptable
+NaBH4,acid,block,Rapid hydrolysis destroys reagent
+NaBH4,methanol,warn,Slow methanolysis acceptable at low temp
+Grignard,water,block,Quenches organometallic
+Grignard,alcohol,block,Quenches organometallic
+Grignard,carboxylic_acid,block,Quenches organometallic
+Grignard,amine,warn,Possible deprotonation side reaction
+organolithium,water,block,Violent quench destroys reagent
+organolithium,alcohol,block,Violent quench destroys reagent
+organolithium,DMSO,block,Reacts with DMSO above -40C
+organolithium,DMF,warn,Reacts with DMF to give aldehyde (useful but risky)
+n_BuLi,THF,warn,THF ring-opening above 0C
+t_BuLi,THF,warn,Exothermic ring-opening above -78C
+t_BuLi,diethyl_ether,warn,Preferred over THF but still use low temp
+mCPBA,amine,warn,N-oxidation side product
+mCPBA,sulfide,warn,Sulfoxidation competes with epoxidation
+mCPBA,thiol,block,Over-oxidation to sulfonic acid
+KMnO4,alcohol,block,Over-oxidation of primary alcohol to carboxylic acid
+KMnO4,alkene,warn,Dihydroxylation or cleavage depending on conditions
+OsO4,alkene,warn,cis-Dihydroxylation requires stoichiometric reoxidant
+OsO4,thiol,block,Catalyst poisoning
+ozone,thiol,block,Over-oxidation
+ozone,sulfide,warn,Sulfoxide/sulfone formation
+NBS,amine,block,N-bromination side product
+NBS,thiol,block,S-bromination
+NBS,enol,warn,Alpha-bromination competes with allylic
+NCS,amine,block,N-chlorination
+NCS,thiol,block,S-chlorination
+Pd_catalyst,thiol,block,Catalyst poisoning
+Pd_catalyst,phosphine_excess,warn,Inhibition at high L:Pd ratio
+Pd_catalyst,amine_excess,warn,Coordination inhibition
+Ni_catalyst,thiol,block,Catalyst poisoning
+Ru_catalyst,thiol,warn,Possible poisoning
+Cu_catalyst,thiol,warn,Cu-thiolate complex formation
+SOCl2,alcohol,warn,Chlorination; ensure no sensitive groups present
+SOCl2,amine,block,Sulfinylamine formation
+SOCl2,water,block,Hydrolysis regenerates carboxylic acid
+PCl5,alcohol,warn,Chlorination; exothermic
+PCl5,water,block,Violent hydrolysis
+POCl3,water,block,Hydrolysis
+POCl3,amine,warn,Vilsmeier conditions; requires control
+oxalyl_chloride,water,block,Hydrolysis
+oxalyl_chloride,DMSO,warn,Swern oxidation conditions; CO/CO2 evolution
+DCC,water,block,Hydrolysis of active ester
+DCC,amine_excess,warn,Urea byproduct formation
+EDC,water,warn,Slow hydrolysis; add immediately to reaction
+DIBAL,ester,warn,Over-reduction to alcohol at excess or warm temp
+DIBAL,water,block,Quenches reagent violently at low temp
+DIBAL,alcohol,block,Quenches reagent
+strong_base,protic_solvent,block,Deprotonation of solvent destroys base
+strong_base,ester,warn,Saponification side reaction
+strong_base,nitrile,warn,Possible alpha-deprotonation
+LDA,THF,warn,Acceptable at -78C; ring-opening above 0C
+LDA,HMPA,warn,Carcinogenic additive; use minimum amount
+KHMDS,THF,warn,Standard conditions; acceptable
+NaHMDS,THF,warn,Standard conditions; acceptable
+strong_acid,amine,block,Salt formation deactivates nucleophile
+strong_acid,epoxide,warn,Acid-catalyzed ring-opening
+HF,glass,block,Etches glass; use plastic
+HCl,carbonate,warn,CO2 evolution
+acyl_chloride,water,block,Hydrolysis
+acyl_chloride,alcohol,warn,Esterification (often desired but check intent)
+acyl_chloride,amine,warn,Amide formation (often desired)
+isocyanate,water,block,Hydrolysis to carbamic acid then CO2/amine
+isocyanate,alcohol,warn,Urethane formation
+isocyanate,amine,warn,Urea formation (often desired)
+epoxide,strong_acid,warn,Acid-catalyzed opening; regiochemistry changes
+epoxide,strong_base,warn,Base-catalyzed opening; anti addition
+alkyl_halide,strong_base,warn,E2 elimination competes with SN2
+alkyl_halide,silver_salt,warn,Agitation promotes SN1
+Pd_C,H2,warn,Ensure vessel rated for H2 pressure
+Pd_C,alkene_plus_H2,warn,Over-reduction possible if excess H2
+Raney_Ni,H2,warn,Pyrophoric; handle under inert atmosphere
+AIBN,heat,warn,Decomposition above 80C; use minimum amount
+BH3_THF,alkene,warn,Hydroboration; anti-Markovnikov
+BH3_THF,carbonyl,warn,Reduction of ketone/aldehyde
+BH3_THF,amine,block,BH3-amine complex formation deactivates reagent
+9_BBN,alkene,warn,Selective hydroboration of terminal alkene
+9_BBN,water,block,Quenches reagent
+diazonium,heat,block,Explosive decomposition
+diazonium,Cu_catalyst,warn,Sandmeyer conditions; requires control
+diazonium,H2O,warn,Phenol formation (Balz-Schiemann or hydrolysis)
+azide,heat,block,Explosive decomposition at high concentration
+azide,strong_acid,block,HN3 evolution (toxic gas)
+peroxide,heat,block,Explosive decomposition
+peroxide,metal_catalyst,block,Catalytic decomposition
+DMSO,acid_chloride,warn,Swern requires strict temperature control
+DMSO,strong_acid,warn,Pummerer reaction possible
+DMF,strong_base,warn,Deprotonation of DMF formyl group
+DMF,PCl5,warn,Vilsmeier reagent formation (may be desired)
+acetone,strong_base,warn,Aldol condensation
+acetone,strong_acid,warn,Aldol and dehydration
+THF,n_BuLi,warn,Ring-opening above 0C
+THF,K_metal,block,Superoxide formation; fire hazard
+diethyl_ether,O2,warn,Peroxide formation on storage; test before use
+DCM,strong_base,block,Dichlorocarbene formation
+chloroform,strong_base,block,Dichlorocarbene formation
+chloroform,O2,warn,Phosgene formation on storage
+benzene,carcinogen,warn,Use toluene instead; IARC Group 1 carcinogen
+toluene,strong_oxidant,warn,Side-chain oxidation
+acetonitrile,strong_base,warn,Alpha-deprotonation
+HMPA,carcinogen,warn,Probable human carcinogen; minimize use
+NMP,reproductive_toxin,warn,Reprotoxic; use safer alternatives
+pyridine,strong_acid,block,Salt formation; base no longer available
+triethylamine,strong_acid,block,Salt formation; base no longer available
+DIPEA,strong_acid,block,Salt formation; base no longer available
+DBU,acyl_halide,warn,Possible acylation of DBU
+TFA,amine,block,Salt formation
+HCl_gas,amine,block,Salt formation
+oxidant,reductant,block,Mutual destruction
+H2O2,Fe_salt,warn,Fenton chemistry; radical generation
+H2O2,organic_solvent,warn,Peroxide explosion risk at high concentration
+KOtBu,DMSO,warn,Potassium dimsyl formation (superbase)
+KOtBu,CHCl3,block,Dichlorocarbene formation
+NaOMe,ester,warn,Transesterification
+NaOEt,ester,warn,Transesterification
+K2CO3,acyl_halide,warn,Ester hydrolysis possible in wet solvent
+Cs2CO3,acyl_halide,warn,Ester hydrolysis possible in wet solvent
+CuI,thiol,block,Cu-thiolate; catalyst poisoning in cross-coupling
+CuBr,thiol,block,Cu-thiolate; catalyst poisoning
+Pd_Xphos,thiol,warn,Some Pd/bulky phosphine systems tolerate thiols
+phosphine,O2,block,Phosphine oxide formation; deactivates ligand
+n_Bu3P,O2,block,Phosphine oxide formation
+PPh3,O2,warn,Slow oxidation; store under inert gas
+PPh3,alkyl_halide,warn,Wittig salt formation (may be desired)
+DEAD,thiol,warn,Thiol is reactive in Mitsunobu
+DIAD,thiol,warn,Thiol is reactive in Mitsunobu
+Mitsunobu,tertiary_alcohol,block,No inversion possible at tertiary center
+Wittig,enolizable_aldehyde,warn,Enolization competes; use stabilized ylide
+Horner_Wadsworth_Emmons,ester,warn,Self-condensation possible
+aldehyde,amine,warn,Imine formation (Schiff base); may be desired
+ketone,amine,warn,Imine or enamine formation
+aldehyde,strong_base,warn,Cannizzaro or aldol; depends on substitution
+aldehyde,O2,warn,Auto-oxidation to carboxylic acid on storage
+primary_amine,acyl_halide,warn,Mono vs diacylation; control stoichiometry
+secondary_amine,acyl_halide,warn,Amide formation; generally clean
+tertiary_amine,acyl_halide,warn,Quaternary ammonium formation possible
+amine,phosgene,block,Toxic gas generation possible
+carbene,O2,block,Rapid quench of carbene intermediate
+nitrene,O2,block,Rapid quench of nitrene intermediate
+radical,O2,warn,Radical chain inhibition or peroxide formation
+silyl_enol_ether,water,warn,Hydrolysis regenerates carbonyl
+silyl_ether,fluoride,warn,Deprotection (may be desired)
+TBAF,ester,warn,Saponification possible at high equiv
+TMS,water,warn,Deprotection
+Boc,TFA,warn,Deprotection (may be desired)
+Cbz,H2_Pd,warn,Deprotection (may be desired)
+Fmoc,piperidine,warn,Deprotection (may be desired)
+alloc,Pd0,warn,Deprotection (may be desired)
+PMB,DDQ,warn,Oxidative deprotection (may be desired)
+PMB,CAN,warn,Oxidative deprotection (may be desired)
+MOM,strong_acid,warn,Deprotection
+THP,strong_acid,warn,Deprotection
+acetal,strong_acid,warn,Hydrolysis to carbonyl
+ketal,strong_acid,warn,Hydrolysis to carbonyl
+boronate_ester,H2O2,warn,Oxidation to alcohol (may be desired)
+boronate_ester,NaIO4,warn,Oxidative cleavage
+vinyl_halide,Pd_catalyst,warn,Cross-coupling substrate; ensure base present
+aryl_halide,Pd_catalyst,warn,Cross-coupling substrate; ensure base present
+alkyl_boronate,Pd_catalyst,warn,Suzuki coupling; needs base and water
+alkyl_stannane,Pd_catalyst,warn,Stille coupling; toxic tin byproduct
+alkene,Pd_catalyst_CO,warn,Carbonylation; requires CO pressure vessel
+terminal_alkyne,Cu_catalyst,warn,Glaser coupling if O2 present
+alkyne,H2_Lindlar,warn,Semi-hydrogenation to cis alkene
+alkyne,H2_Pd_C,warn,Over-reduction to alkane possible
+epoxide,Nu_amine,warn,Ring-opening; regiochemistry depends on conditions
+aziridine,Nu,warn,Reactive electrophile; strain-driven opening
+beta_lactam,water,warn,Hydrolysis; penicillin instability
+beta_lactone,amine,warn,Ring-opening acylation
+anhydride,water,warn,Hydrolysis to carboxylic acid
+anhydride,amine,warn,Amide + carboxylic acid
+sulfonate_ester,strong_base,warn,E2 elimination competes with SN2
+mesylate,thiol,warn,Thioether formation (may be desired)
+tosylate,thiol,warn,Thioether formation (may be desired)
+triflate,Nu,warn,Excellent electrophile; highly reactive
+diazo,Rh_catalyst,warn,Carbene insertion; control required
+diazo,Cu_catalyst,warn,Cyclopropanation or C-H insertion
+fluoride_reagent,silicon,warn,Strong Si-F bond drives reaction
+fluoride_reagent,boron,warn,Trifluoroborate formation
+NFSI,enolate,warn,Electrophilic fluorination
+Selectfluor,enolate,warn,Electrophilic fluorination

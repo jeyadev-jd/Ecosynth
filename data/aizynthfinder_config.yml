@@ -1,0 +1,20 @@
+# AizynthFinder configuration for EcoSynth
+# Download pre-trained policy weights from:
+#   https://github.com/MolecularAI/aizynthfinder/releases
+# Place uspto_model.hdf5 + templates.hdf5 in data/aizynthfinder_weights/
+
+finder:
+  time_limit: 60
+  iteration_limit: 100
+  max_transforms: 4
+
+policy:
+  files:
+    default:
+      - data/aizynthfinder_weights/uspto_model.hdf5
+      - data/aizynthfinder_weights/templates.hdf5
+
+stock:
+  files:
+    zinc:
+      - data/aizynthfinder_weights/zinc_stock.hdf5

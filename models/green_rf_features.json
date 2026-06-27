@@ -1,0 +1,18 @@
+{
+  "feature_names": [
+    "atom_economy",
+    "e_factor_norm",
+    "pmi_norm",
+    "chem21_score",
+    "step_penalty"
+  ],
+  "feature_importances": {
+    "atom_economy": 0.34197130927913233,
+    "e_factor_norm": 0.3217796179490051,
+    "pmi_norm": 0.3362490727718626,
+    "chem21_score": 0.0,
+    "step_penalty": 0.0
+  },
+  "train_size": 68,
+  "test_rmse": 0.004945516532314439
+}

@@ -1,0 +1,37 @@
+name,safety,health,environment,composite
+water,10,10,10,10.0
+ethanol,8,8,8,8.0
+methanol,6,5,7,6.0
+ethyl acetate,8,8,7,7.67
+acetone,8,7,7,7.33
+2-methylthf,7,7,8,7.33
+2-me-thf,7,7,8,7.33
+isopropanol,8,8,7,7.67
+tert-butanol,7,7,7,7.0
+butyl acetate,7,7,6,6.67
+dimethyl sulfoxide,6,5,5,5.33
+dmso,6,5,5,5.33
+acetonitrile,5,4,5,4.67
+thf,5,5,5,5.0
+tetrahydrofuran,5,5,5,5.0
+toluene,4,3,4,3.67
+diethyl ether,3,5,4,4.0
+dichloromethane,3,3,3,3.0
+dcm,3,3,3,3.0
+chloroform,2,2,2,2.0
+hexane,3,3,3,3.0
+heptane,4,4,4,4.0
+dmf,4,3,3,3.33
+dimethylformamide,4,3,3,3.33
+dioxane,2,2,3,2.33
+"1,4-dioxane",2,2,3,2.33
+benzene,1,1,2,1.33
+pyridine,3,2,3,2.67
+acetic acid,5,5,5,5.0
+cyclohexane,4,4,4,4.0
+xylene,3,3,3,3.0
+diisopropyl ether,3,4,4,3.67
+dme,4,4,4,4.0
+"1,2-dimethoxyethane",4,4,4,4.0
+nmp,3,2,3,2.67
+n-methylpyrrolidone,3,2,3,2.67

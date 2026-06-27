@@ -1,0 +1,275 @@
+\begin{thebibliography}{38}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Corey and Wipke(1969)]{corey1969lhasa}
+E.~J. Corey and W.~T. Wipke.
+\newblock Computer-assisted design of complex organic syntheses.
+\newblock \emph{Science}, 166\penalty0 (3903):\penalty0 178--192, 1969.
+
+\bibitem[Segler et~al.(2018)Segler, Preuss, and Waller]{segler2018mcts}
+Marwin H.~S. Segler, Mike Preuss, and Mark~P. Waller.
+\newblock Planning chemical syntheses with deep neural networks and symbolic
+  {AI}.
+\newblock \emph{Nature}, 555:\penalty0 604--610, 2018.
+
+\bibitem[Schwaller et~al.(2019)Schwaller, Laino, Gaudin, Bolgar, Hunter, Bekas,
+  and Lee]{schwaller2019molecular}
+Philippe Schwaller, Teodoro Laino, Th{\'e}ophile Gaudin, Peter Bolgar,
+  Christopher~A. Hunter, Costas Bekas, and Alpha~A. Lee.
+\newblock Molecular transformer: A model for uncertainty-calibrated chemical
+  reaction prediction.
+\newblock \emph{ACS Central Science}, 5\penalty0 (9):\penalty0 1572--1583,
+  2019.
+
+\bibitem[Liu et~al.(2017)Liu, Ramsundar, Kawthekar, Shi, Gomes, Lakshmikanth,
+  Ho, Sloane, Wender, and Pande]{liu2017retrosynthesis}
+Bowen Liu, Bharath Ramsundar, Prasad Kawthekar, Jihao Shi, Joseph Gomes,
+  Quang~Nguyen Lakshmikanth, Steve Ho, J.~Sloane, Paul Wender, and Vijay Pande.
+\newblock Retrosynthetic reaction prediction using neural sequence-to-sequence
+  models.
+\newblock \emph{ACS Central Science}, 3\penalty0 (10):\penalty0 1103--1113,
+  2017.
+
+\bibitem[Anastas and Warner(1998)]{anastas1998greenchemistry}
+Paul~T. Anastas and John~C. Warner.
+\newblock \emph{Green Chemistry: Theory and Practice}.
+\newblock Oxford University Press, 1998.
+
+\bibitem[Wipke and Howe(1977)]{wipke1977secs}
+W.~T. Wipke and W.~J. Howe.
+\newblock Computer-assisted organic synthesis.
+\newblock \emph{ACS Symposium Series}, 61:\penalty0 1--20, 1977.
+
+\bibitem[Szymku{\'c} et~al.(2016)Szymku{\'c}, Gajewska, Klucznik, Molga,
+  Dittwald, Startek, Bajczyk, and Grzybowski]{szymkuc2016casp}
+Sara Szymku{\'c}, Ewa~P. Gajewska, Tomasz Klucznik, Karol Molga, Piotr
+  Dittwald, Micha{\l} Startek, Micha{\l} Bajczyk, and Bart{\l}omiej~A.
+  Grzybowski.
+\newblock Computer-assisted synthetic planning: the end of the beginning.
+\newblock \emph{Angewandte Chemie International Edition}, 55\penalty0
+  (20):\penalty0 5904--5937, 2016.
+
+\bibitem[Lowe(2012)]{lowe2012uspto}
+Daniel~Mark Lowe.
+\newblock \emph{Extraction of chemical structures and reactions from the
+  literature}.
+\newblock PhD thesis, University of Cambridge, 2012.
+
+\bibitem[Coley et~al.(2017)Coley, Rogers, Green, and
+  Jensen]{coley2017synthesis}
+Connor~W. Coley, Luke Rogers, William~H. Green, and Klavs~F. Jensen.
+\newblock Computer-assisted retrosynthesis based on molecular similarity.
+\newblock \emph{ACS Central Science}, 3\penalty0 (12):\penalty0 1237--1245,
+  2017.
+
+\bibitem[Vaswani et~al.(2017)Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez,
+  Kaiser, and Polosukhin]{vaswani2017attention}
+Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones,
+  Aidan~N. Gomez, {\L}ukasz Kaiser, and Illia Polosukhin.
+\newblock Attention is all you need.
+\newblock 30, 2017.
+
+\bibitem[Chen et~al.(2020)Chen, Li, Dai, and Song]{chen2020retro}
+Binghong Chen, Chengtao Li, Hanjun Dai, and Le~Song.
+\newblock Retro*: Learning retrosynthetic planning with neural guided {A*}
+  search.
+\newblock \emph{Proceedings of the 37th International Conference on Machine
+  Learning}, pages 1608--1616, 2020.
+
+\bibitem[Genheden et~al.(2020)Genheden, Thakkar, Chadimov{\'a}, Reymond,
+  Engkvist, and Bjerrum]{genheden2020aizynthfinder}
+Samuel Genheden, Amol Thakkar, Veronika Chadimov{\'a}, Jean-Louis Reymond, Ola
+  Engkvist, and Esben Bjerrum.
+\newblock {AiZynthFinder}: a fast, robust and flexible open-source software for
+  retrosynthetic planning.
+\newblock \emph{Journal of Cheminformatics}, 12:\penalty0 70, 2020.
+
+\bibitem[Landrum(2006)]{landrum2006rdkit}
+Gregory~A. Landrum.
+\newblock {RDKit}: Open-source cheminformatics.
+\newblock \emph{Zenodo}, 2006.
+\newblock Version 2022.09.5.
+
+\bibitem[Dai et~al.(2019)Dai, Li, Coley, Dai, and Song]{dai2019retrosynthesis}
+Hanjun Dai, Chengtao Li, Connor~W. Coley, Bo~Dai, and Le~Song.
+\newblock Retrosynthesis prediction with conditional graph logic network.
+\newblock 32, 2019.
+
+\bibitem[Somnath et~al.(2021)Somnath, Bunne, Coley, Krause, and
+  Barzilay]{somnath2021learning}
+Vignesh~Ram Somnath, Charlotte Bunne, Connor~W. Coley, Andreas Krause, and
+  Regina Barzilay.
+\newblock Learning graph models for retrosynthesis prediction.
+\newblock 34, 2021.
+
+\bibitem[Yan et~al.(2022)Yan, Ding, Zhao, Zheng, Yang, Yu, and
+  Huang]{yan2022retrocomposer}
+Chaochao Yan, Qianggang Ding, Peilin Zhao, Shuangjia Zheng, Jinyu Yang, Yang
+  Yu, and Junzhou Huang.
+\newblock Retrocomposer: Composing templates for template-based retrosynthesis
+  prediction.
+\newblock \emph{Biomolecules}, 12\penalty0 (9):\penalty0 1325, 2022.
+
+\bibitem[Sheldon(2007)]{sheldon2007efactor}
+Roger~A. Sheldon.
+\newblock The {E} factor: fifteen years on.
+\newblock \emph{Green Chemistry}, 9\penalty0 (12):\penalty0 1273--1283, 2007.
+
+\bibitem[Constable et~al.(2002)Constable, Curzons, and
+  Cunningham]{constable2007solvents}
+David J.~C. Constable, Alan~D. Curzons, and Virginia~L. Cunningham.
+\newblock Metrics to green chemistry---which are the best?
+\newblock \emph{Green Chemistry}, 4:\penalty0 521--527, 2002.
+
+\bibitem[Henderson et~al.(2011)Henderson, Jim{\'e}nez-Gonz{\'a}lez, Constable,
+  Alston, Inglis, Fisher, Sherwood, Binks, and Curzons]{henderson2011chem21}
+Richard~K. Henderson, Concepci{\'o}n Jim{\'e}nez-Gonz{\'a}lez, David J.~C.
+  Constable, Steven~R. Alston, Geoffrey G.~A. Inglis, Gail Fisher, James
+  Sherwood, Steve~P. Binks, and Alan~D. Curzons.
+\newblock {CHEM21} selection guide of classical- and less classical-solvents.
+\newblock \emph{Green Chemistry}, 13:\penalty0 854--862, 2011.
+
+\bibitem[Roschangar et~al.(2015)Roschangar, Sheldon, and
+  Senanayake]{roschangar2015pmi}
+Frank Roschangar, Roger~A. Sheldon, and Chris~H. Senanayake.
+\newblock Overcoming barriers to green chemistry in the pharmaceutical
+  industry---the green aspiration level concept.
+\newblock \emph{Green Chemistry}, 17:\penalty0 752--768, 2015.
+
+\bibitem[Mikulak-Klucznik et~al.(2020)Mikulak-Klucznik, Gol{\k{e}}biowska,
+  Bayly, Szymku{\'c}, and Grzybowski]{mikulak2020computational}
+Barbara Mikulak-Klucznik, Patrycja Gol{\k{e}}biowska, Alison~A. Bayly, Sara
+  Szymku{\'c}, and Bart{\l}omiej~A. Grzybowski.
+\newblock Computational planning of the synthesis of complex natural products.
+\newblock \emph{Nature}, 588:\penalty0 83--88, 2020.
+
+\bibitem[Struble et~al.(2020)Struble, Alvarez, Brown, Chytil, Cisar,
+  DesJarlais, Engkvist, Frank, Greve, Griffin, et~al.]{struble2020current}
+Thomas~J. Struble, Juan~C. Alvarez, Scott~P. Brown, Milan Chytil, Justin Cisar,
+  Renee~L. DesJarlais, Ola Engkvist, Scott~A. Frank, Daniel~R. Greve, David~J.
+  Griffin, et~al.
+\newblock Current and future roles of artificial intelligence in medicinal
+  chemistry synthesis.
+\newblock \emph{Journal of Medicinal Chemistry}, 63\penalty0 (16):\penalty0
+  8667--8682, 2020.
+
+\bibitem[Lewis et~al.(2020)Lewis, Perez, Piktus, Petroni, Karpukhin, Goyal,
+  K{\"u}ttler, Lewis, Yih, Rockt{\"a}schel, Riedel, and Kiela]{lewis2020rag}
+Patrick Lewis, Ethan Perez, Aleksandra Piktus, Fabio Petroni, Vladimir
+  Karpukhin, Naman Goyal, Heinrich K{\"u}ttler, Mike Lewis, Wen-tau Yih, Tim
+  Rockt{\"a}schel, Sebastian Riedel, and Douwe Kiela.
+\newblock Retrieval-augmented generation for knowledge-intensive {NLP} tasks.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~33, pages 9459--9474, 2020.
+
+\bibitem[Reimers and Gurevych(2019)]{reimers2019sentencebert}
+Nils Reimers and Iryna Gurevych.
+\newblock Sentence-{BERT}: Sentence embeddings using {Siamese BERT}-networks.
+\newblock In \emph{Proceedings of the 2019 Conference on Empirical Methods in
+  Natural Language Processing}, pages 3982--3992, 2019.
+
+\bibitem[Johnson et~al.(2021)Johnson, Douze, and J{\'e}gou]{johnson2019faiss}
+Jeff Johnson, Matthijs Douze, and Herv{\'e} J{\'e}gou.
+\newblock Billion-scale similarity search with {GPUs}.
+\newblock \emph{IEEE Transactions on Big Data}, 7\penalty0 (3):\penalty0
+  535--547, 2021.
+
+\bibitem[Schwaller et~al.(2021)Schwaller, Probst, Vaucher, Nair, Kreutter,
+  Laino, and Reymond]{schwaller2021rxnfp}
+Philippe Schwaller, Daniel Probst, Alain~C. Vaucher, Vishnu~H. Nair, David
+  Kreutter, Teodoro Laino, and Jean-Louis Reymond.
+\newblock Mapping the space of chemical reactions using attention-based neural
+  networks.
+\newblock \emph{Nature Machine Intelligence}, 3:\penalty0 144--152, 2021.
+
+\bibitem[Bran et~al.(2023)Bran, Cox, Schilter, Baldassari, White, and
+  Schwaller]{bran2023chemcrow}
+Andres~M. Bran, Sam Cox, Oliver Schilter, Carlo Baldassari, Andrew~D. White,
+  and Philippe Schwaller.
+\newblock {ChemCrow}: Augmenting large-language models with chemistry tools.
+\newblock \emph{arXiv preprint arXiv:2304.05376}, 2023.
+
+\bibitem[Boiko et~al.(2023)Boiko, MacKnight, Kline, and
+  Gomes]{boiko2023autonomous}
+Daniil~A. Boiko, Robert MacKnight, Ben Kline, and Gabe Gomes.
+\newblock Autonomous chemical research with large language models.
+\newblock \emph{Nature}, 624:\penalty0 570--578, 2023.
+
+\bibitem[White et~al.(2023)White, Hocky, Gandhi, Ansari, Cox, Wellawatte,
+  Sasmal, Yang, Liu, Singh, Pattanaik, and Chanussot]{white2023chemllm}
+Andrew~D. White, Glen~M. Hocky, Heta~A. Gandhi, Mehrad Ansari, Sam Cox,
+  Geemi~P. Wellawatte, Subhajit Sasmal, Zhuoying Yang, Kangxin Liu, Yuvraj
+  Singh, Lagnajit Pattanaik, and Lowik Chanussot.
+\newblock Assessment of chemistry knowledge in large language models that
+  generate code.
+\newblock \emph{Digital Discovery}, 2:\penalty0 368--376, 2023.
+
+\bibitem[Ji et~al.(2023)Ji, Lee, Frieske, Yu, Su, Xu, Ishii, Bang, Madotto, and
+  Fung]{ji2023hallucination}
+Ziwei Ji, Nayeon Lee, Rita Frieske, Tiezheng Yu, Dan Su, Yan Xu, Etsuko Ishii,
+  Yejin Bang, Andrea Madotto, and Pascale Fung.
+\newblock Survey of hallucination in natural language generation.
+\newblock \emph{ACM Computing Surveys}, 55\penalty0 (12):\penalty0 1--38, 2023.
+
+\bibitem[Huang et~al.(2023)Huang, Yu, Ma, Zhong, Feng, Wang, Chen, Peng, Feng,
+  Qin, and Liu]{huang2023hallucination}
+Lei Huang, Weijiang Yu, Weitao Ma, Weihong Zhong, Zhangyin Feng, Haotian Wang,
+  Qianglong Chen, Weihua Peng, Xiaocheng Feng, Bing Qin, and Ting Liu.
+\newblock A survey on hallucination in large language models: Principles,
+  taxonomy, challenges, and open questions.
+\newblock \emph{arXiv preprint arXiv:2311.05232}, 2023.
+
+\bibitem[Krenn et~al.(2020)Krenn, H{\"a}se, Nigam, Friederich, and
+  Aspuru-Guzik]{krenn2020selfies}
+Mario Krenn, Florian H{\"a}se, Akshat~Kumar Nigam, Pascal Friederich, and
+  Al{\'a}n Aspuru-Guzik.
+\newblock Self-referencing embedded strings ({SELFIES}): A 100\% robust
+  molecular string representation.
+\newblock \emph{Machine Learning: Science and Technology}, 1:\penalty0 045024,
+  2020.
+
+\bibitem[Chithrananda et~al.(2020)Chithrananda, Grand, and
+  Ramsundar]{chithrananda2020chemberta}
+Seyone Chithrananda, Gabriel Grand, and Bharath Ramsundar.
+\newblock {ChemBERTa}: Large-scale self-supervised pretraining for molecular
+  property prediction.
+\newblock \emph{arXiv preprint arXiv:2010.09885}, 2020.
+
+\bibitem[Devlin et~al.(2019)Devlin, Chang, Lee, and Toutanova]{devlin2019bert}
+Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova.
+\newblock {BERT}: Pre-training of deep bidirectional transformers for language
+  understanding.
+\newblock pages 4171--4186, 2019.
+
+\bibitem[Ross et~al.(2022)Ross, Belgodere, Chenthamarakshan, Padhi, Mroueh, and
+  Das]{ross2022chemberta2}
+Jerret Ross, Brian Belgodere, Vijil Chenthamarakshan, Inkit Padhi, Youssef
+  Mroueh, and Payel Das.
+\newblock Large-scale chemical language representations capture molecular
+  structure and properties.
+\newblock \emph{Nature Machine Intelligence}, 4:\penalty0 1256--1264, 2022.
+
+\bibitem[Schneider et~al.(2016)Schneider, Stiefl, and
+  Landrum]{schneider2016classification}
+Nadine Schneider, Nikolaus Stiefl, and Gregory~A. Landrum.
+\newblock What's what: The (nearly) definitive guide to reaction role
+  assignment.
+\newblock \emph{Journal of Chemical Information and Modeling}, 56\penalty0
+  (12):\penalty0 2336--2346, 2016.
+
+\bibitem[Breiman(2001)]{breiman2001random}
+Leo Breiman.
+\newblock Random forests.
+\newblock \emph{Machine Learning}, 45:\penalty0 5--32, 2001.
+
+\bibitem[Sterling and Irwin(2015)]{sterling2015zinc}
+Teague Sterling and John~J. Irwin.
+\newblock {ZINC} 15 -- ligand discovery for everyone.
+\newblock \emph{Journal of Chemical Information and Modeling}, 55\penalty0
+  (11):\penalty0 2324--2337, 2015.
+
+\end{thebibliography}
