@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 data/chromadb/
 data/uspto_50k.csv
+.claude/
