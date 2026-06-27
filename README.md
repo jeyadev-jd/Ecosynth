@@ -2,6 +2,8 @@
 
 AI-assisted retrosynthesis planner that combines symbolic chemistry rules, RAG over literature/reaction data, and a green-chemistry scorer to propose, validate, and rank synthesis routes — with built-in hallucination detection and a React frontend for exploring reasoning traces.
 
+![Ecosynth UI](Pasted%20image.png)
+
 ## What it does
 
 - **Retrosynthesis engine** (`ecosynth/`) — wraps AiZynthFinder for route search, builds a constraint graph over reaction steps, repairs broken branches, and scores routes for green-chemistry metrics (solvents, reagents).
